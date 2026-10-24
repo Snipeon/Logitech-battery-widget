@@ -52,8 +52,8 @@ Like:
 4. How long the backend helper keeps a snapshot of the last battery values:  
    ```SnapshotCacheSeconds``` (in seconds)
      
-5. Whether to enable diagnostic logging:
-   ```DiagnosticLogging``` (1 to enable, 0 to disable)
+5. Whether to enable diagnostic logging:  
+   ```DiagnosticLogging``` (1 to enable, 0 to disable)  
        
   
 You may have noticed that the backend helper keeps a snapshot of last battery values.  
