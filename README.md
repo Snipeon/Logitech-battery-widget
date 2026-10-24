@@ -62,7 +62,7 @@ And too many other factors. Your device may go to sleep, be busy somehow(Don't a
 Either way, I set it up like that so you can get the most constant readout on the widget.  
 Well, that's all the updates from me. Enjoy now y'all~  
 
-###Minor Update 24/10/2026:  
+### Minor Update 24/10/2026:  
 
 I had Codex write to a .tmp file and do an atomic replace with the file rainmeter reads from to stop the flickering and damn did Codex go absolutely overkill with the error checking.  
 I'm not worthy. Time to level up my laziness. Orz  
