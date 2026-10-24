@@ -27,3 +27,37 @@ And with the dry and boring part done, here's how the skin looks:
   
 Skin supports up to 4 devices concurrently. If you have more, feel free to modify this yourself to suit your needs.  
 As said, no need for LGS, or GHUB or any sort of funny software to be running. This baby directly reads off the USB information provided by the devices. Have fun!
+
+## Update 24/10/2026:
+
+Oh right, I completely forgot not everyone knows what to do with this thing here.  
+Here's the simple process:  
+  
+1. Download this whole git as a .zip. Don't ask me how to do that. Google is sitting right there.  
+2. Unpack the .zip into your rainmeter skins folder. By default it should be ```C:\Users\[user]\Documents\Rainmeter\Skins\```. You installed rainmeter, you should know where it is.  
+3. Refresh all your skins in rainmeter.  
+4. Load the damned thing, customize it, and enjoy!  
+  
+Besides the 3 layouts you see up there, there's also a ```settings.inc``` in the ```@Resources``` folder you can load up in your text editor to customize a few parameters.  
+Like:  
+1. How often the skin refreshes:  
+   ```RainmeterUpdateMilliseconds``` (in milliseconds)  
+    
+2. How often the backend helper updates the values:  
+   ```PollIntervalSeconds``` (in seconds)  
+     
+3. How often the backend helper rescans for changes in connections:  
+   ```DiscoveryIntervalSeconds``` (in seconds)  
+       
+4. How long the backend helper keeps a snapshot of the last battery values:  
+   ```SnapshotCacheSeconds``` (in seconds)
+     
+5. Whether to enable diagnostic logging:
+   ```DiagnosticLogging``` (1 to enable, 0 to disable)
+       
+  
+You may have noticed that the backend helper keeps a snapshot of last battery values.  
+Simply put, Logitech is still a piece of shit and can't 100% report consistently even over its own native USB protocols.  
+And too many other factors. Your device may go to sleep, be busy somehow(Don't ask me how, ask Logitech), or just send a timeout error the helper's way.  
+Either way, I set it up like that so you can get the most constant readout on the widget.  
+Well, that's all the updates from me. Enjoy now y'all~  
