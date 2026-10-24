@@ -25,6 +25,7 @@ use windows_sys::Win32::{
         HumanInterfaceDevice::GUID_DEVINTERFACE_HID,
     },
     Foundation::HWND,
+    Storage::FileSystem::{MoveFileExW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH},
 };
 
 // Defaults used if a setting is missing or cannot be read from Settings.inc.
@@ -940,5 +941,52 @@ fn write_snapshot(
     // Keep the tile order predictable by sorting device names alphabetically.
     rows.sort_by(|a, b| a.0.cmp(&b.0));
     let rows = rows.into_iter().map(|(_, row)| row).collect::<String>();
-    let _ = fs::write(path, &rows);
+    // Write a complete new snapshot beside the current one, then publish it in
+    // one rename operation. Rainmeter sees either the old or new complete file.
+    let temp_path = path.with_file_name(format!("devices.{}.tmp", std::process::id()));
+    if fs::write(&temp_path, &rows).is_err() {
+        let _ = fs::remove_file(&temp_path);
+        return;
+    }
+    if publish_snapshot(&temp_path, path).is_err() {
+        // Preserve the last good snapshot if the destination is temporarily locked.
+        let _ = fs::remove_file(&temp_path);
+    }
+}
+
+// Windows rename does not replace an existing file through std::fs::rename.
+// Use MoveFileExW so the completed temporary file replaces the TSV atomically.
+#[cfg(windows)]
+fn publish_snapshot(temp: &Path, destination: &Path) -> std::io::Result<()> {
+    use std::os::windows::ffi::OsStrExt;
+
+    let temp_wide: Vec<u16> = temp.as_os_str().encode_wide().chain(Some(0)).collect();
+    let destination_wide: Vec<u16> = destination
+        .as_os_str()
+        .encode_wide()
+        .chain(Some(0))
+        .collect();
+    // Retry briefly if Rainmeter holds the TSV during a read.
+    for attempt in 0..4 {
+        let result = unsafe {
+            MoveFileExW(
+                temp_wide.as_ptr(),
+                destination_wide.as_ptr(),
+                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+            )
+        };
+        if result != 0 {
+            return Ok(());
+        }
+        if attempt < 3 {
+            thread::sleep(Duration::from_millis(25));
+        }
+    }
+    Err(std::io::Error::last_os_error())
+}
+
+// Keep the helper buildable on non-Windows systems too.
+#[cfg(not(windows))]
+fn publish_snapshot(temp: &Path, destination: &Path) -> std::io::Result<()> {
+    fs::rename(temp, destination)
 }
